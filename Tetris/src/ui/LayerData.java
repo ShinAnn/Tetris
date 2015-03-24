@@ -56,7 +56,7 @@ public abstract class LayerData extends Layer {
 			double percent = (double) nowPoint / pla.getPoint();
 			// 如果已破记录，比值设为100%
 			percent = percent > 1 ? 1.0 : percent;
-			//数据库就设为0
+			//数据库设为0
 			if(imgTitle == Img.DB){
 				percent=0;
 			}

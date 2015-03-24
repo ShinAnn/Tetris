@@ -49,15 +49,23 @@ public class Img {
 	/**
 	 * 分数标题图片
 	 */
-	public static final Image POINT = new ImageIcon("Graphics/string/point.png").getImage();
+	public static Image POINT = new ImageIcon("graphics/string/point.png").getImage();
 	/**
 	 * 消行标题图片
 	 */
-	public static final Image RMLINE = new ImageIcon("Graphics/string/rmline.png").getImage();
+	public static Image RMLINE = new ImageIcon("graphics/string/rmline.png").getImage();
 	/**
 	 * 阴影
 	 */
-	public static final Image SHADOW = new ImageIcon("Graphics/game/shadow.png").getImage();
+	public static Image SHADOW = new ImageIcon("graphics/game/shadow.png").getImage();
+	/**
+	 * 开始按钮
+	 */
+	public static ImageIcon BTN_START = new ImageIcon("graphics/string/start.png");
+	/**
+	 * 设置按钮
+	 */
+	public static ImageIcon BTN_CONFIG = new ImageIcon("graphics/string/config.png");
 	/**
 	 * 下一个的图片数组
 	 */

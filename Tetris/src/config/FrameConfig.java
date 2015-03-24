@@ -18,6 +18,10 @@ public class FrameConfig {
 	 * 图层属性
 	 */
 	private List<LayerConfig> layersConfig;
+	/**
+	 * 按钮属性
+	 */
+	private final ButtonConfig buttonConfig;
 
 	public FrameConfig(Element frame) {
 		// 获取窗口宽度
@@ -50,6 +54,8 @@ public class FrameConfig {
 					Integer.parseInt(layer.attributeValue("h")));
 			layersConfig.add(lc);
 		}
+		//初始化按钮属性
+		buttonConfig = new ButtonConfig(frame.element("button"));
 	}
 
 	public String getTitle() {
@@ -86,5 +92,9 @@ public class FrameConfig {
 
 	public int getLoseIdx() {
 		return loseIdx;
+	}
+
+	public ButtonConfig getButtonConfig() {
+		return buttonConfig;
 	}
 }
