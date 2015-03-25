@@ -1,13 +1,11 @@
 package service;
 
 import java.awt.Point;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import config.GameConfig;
 import dto.GameDto;
-import dto.Player;
 import entity.GameAct;
 
 public class GameTetris implements IGameService{
@@ -22,7 +20,7 @@ public class GameTetris implements IGameService{
 	/**
 	 * 方块种类数
 	 */
-	private static final int MAX_TYPE = 6;
+	private static final int MAX_TYPE = GameConfig.getSystemConfig().getTypeConfig().size()-1;
 	/**
 	 * 升级行数
 	 */
@@ -34,44 +32,35 @@ public class GameTetris implements IGameService{
 	
 	public GameTetris(GameDto dto) {
 		this.dto = dto;
-		GameAct act = new GameAct(random.nextInt(MAX_TYPE));
-		dto.setGameAct(act);
+	}
+
+	
+	/**
+	 * 游戏失败后的处理
+	 */
+	private void afterLose() {
+		//设置游戏开始状态为false
+		this.dto.setStart(false);
+		// TODO 关闭游戏主线程
+		
 	}
 
 	/**
-	 * 控制方向键（上）
+	 * 检查游戏是否失败
 	 */
-	public void keyUp() {
-		this.dto.getGameAct().round(this.dto.getGameMap());
-	}
-
-	/**
-	 * 控制方向键（下）
-	 */
-	public void keyDown() {
-		if(this.dto.getGameAct().move(0, 1,this.dto.getGameMap())){
-			return;
-		}
-		//获得游戏地图对象
+	private boolean isLose() {
+		//获得现在的活动方块
+		Point[] actPoints = this.dto.getGameAct().getActPoints();
+		//获得现在的游戏地图
 		boolean[][] map = this.dto.getGameMap();
-		//获得方块对象
-		Point[] act = this.dto.getGameAct().getActPoints();
-		//将方块堆积到地图数组
-		for (int i = 0; i < act.length; i++) {
-			map[act[i].x][act[i].y] = true;
+		for (int i = 0; i < actPoints.length; i++) {
+			if(map[actPoints[i].x][actPoints[i].y]){
+				return true;
+			}
 		}
-		//判断消行，并计算获得的经验值
-		int plusExp = this.plusExp();
-		//如果发生消行
-		if (plusExp > 0) {
-			// 增加经验值
-			this.plusPoint(plusExp);
-		}
-		// 创建下一个方块
-		this.dto.getGameAct().init(this.dto.getNext());
-		//随机生成再下一个方块
-		this.dto.setNext(random.nextInt(MAX_TYPE)); 
+		return false;
 	}
+
 	/**
 	 * 加分升级操作
 	 */
@@ -130,58 +119,111 @@ public class GameTetris implements IGameService{
 		}
 		return true;
 	}
+	/**
+	 * 控制方向键（上）
+	 */
+	public boolean keyUp() {
+		synchronized (this.dto) {
+			this.dto.getGameAct().round(this.dto.getGameMap());
+		}
+		return true;
+	}
 
+	/**
+	 * 控制方向键（下）
+	 */
+	public boolean keyDown() {
+		synchronized (this.dto) {
+			if (this.dto.getGameAct().move(0, 1, this.dto.getGameMap())) {
+				return false;
+			}
+			// 获得游戏地图对象
+			boolean[][] map = this.dto.getGameMap();
+			// 获得方块对象
+			Point[] act = this.dto.getGameAct().getActPoints();
+			// 将方块堆积到地图数组
+			for (int i = 0; i < act.length; i++) {
+				map[act[i].x][act[i].y] = true;
+			}
+			// 判断消行，并计算获得的经验值
+			int plusExp = this.plusExp();
+			// 如果发生消行
+			if (plusExp > 0) {
+				// 增加经验值
+				this.plusPoint(plusExp);
+			}
+			// 刷新新的方块
+			this.dto.getGameAct().init(this.dto.getNext());
+			// 随机生成再下一个方块
+			this.dto.setNext(random.nextInt(MAX_TYPE));
+			// 检查游戏是否失败
+			if (this.isLose()) {
+				this.afterLose();
+			}
+		}
+		return true;
+	}
 	/**
 	 * 控制方向键（左）
 	 */
-	public void keyLeft() {
-		this.dto.getGameAct().move(-1, 0,this.dto.getGameMap());
+	public boolean keyLeft() {
+		synchronized (this.dto) {
+			this.dto.getGameAct().move(-1, 0, this.dto.getGameMap());
+			return true;
+		}
 	}
 
 	/**
 	 * 控制方向键（右）
 	 */
-	public void keyRight() {
-		this.dto.getGameAct().move(1, 0,this.dto.getGameMap());
-	}
-	
-
-	@Override
-	public void keyFunUp() {
-		int point = this.dto.getNowPoint();
-		int rmline = this.dto.getNowRemoveLine();
-		int lv = this.dto.getNowLevel();
-		point+=10;
-		rmline+=1;
-		if(rmline%20 == 0){
-			lv+=1;
+	public boolean keyRight() {
+		synchronized (this.dto) {
+			this.dto.getGameAct().move(1, 0, this.dto.getGameMap());
+			return true;
 		}
-		this.dto.setNowPoint(point);
-		this.dto.setNowRemoveLine(rmline);
-		this.dto.setNowLevel(lv);
-		
-	}
-
-	@Override
-	public void keyFunDown() {
-
-	}
-
-	@Override
-	public void keyFunLeft() {
-		
-	}
-
-	@Override
-	public void keyFunRight() {
-		
 	}
 	
-	public void setDbRecode(List<Player> players){
-		this.dto.setDbRecode(players);
+
+	@Override
+	public boolean keyFunUp() {
+		// TODO 作弊键
+		this.plusPoint(1);
+		return true;
 	}
-	public void setDiskRecode(List<Player> players){
-		this.dto.setDiskRecode(players);
+
+	@Override
+	public boolean keyFunDown() {
+		//瞬间下落
+		while(!this.keyDown());
+		return true;
+	}
+
+	@Override
+	public boolean keyFunLeft() {
+		//阴影开关
+		this.dto.changeShowShadow();
+		return true;
+	}
+
+	@Override
+	public boolean keyFunRight() {
+		//暂停
+		return true;
+	}
+	
+	@Override
+	public void startGame() {
+		//随机生成下一个方块
+		this.dto.setNext(random.nextInt(MAX_TYPE));
+		//随机生成现在方块
+		this.dto.setGameAct( new GameAct(random.nextInt(MAX_TYPE)));
+		//把游戏状态设为开始
+		this.dto.setStart(true);
+	}
+
+	@Override
+	public void mainAction() {
+		this.keyDown();
 	}
 
 }

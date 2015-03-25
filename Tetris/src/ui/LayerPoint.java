@@ -81,8 +81,4 @@ public class LayerPoint extends Layer {
 		}
 		return new Color(colorR, colorG, colorB);
 	 }
-	
-	
-	
-	
 }

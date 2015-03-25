@@ -22,27 +22,24 @@ public class JPanelGame extends JPanel {
 	private static final int BTN_SIZE_W = GameConfig.getFrameConfig().getButtonConfig().getButtonW();
 	private static final int BTN_SIZE_H = GameConfig.getFrameConfig().getButtonConfig().getButtonH();
 	private List<Layer> layers = null;
-	private GameDto dto = new GameDto();
+	
 	private JButton btnStart;
 	private JButton btnConfig;
 	private GameControl gameControl = null;
 	
-	public JPanelGame(GameDto dto) {
-		//获得dto对象
-		this.dto = dto;
+	public JPanelGame( GameControl gameControl,GameDto dto) {
+		//连接游戏控制器
+		this.gameControl = gameControl;
 		//设置布局管理器为自由布局
 		this.setLayout(null);
 		//初始化组件
-		initComonent();
+		this.initComonent();
 		//初始化层
-		initLayer();
+		this.initLayer(dto);
+		//安装键盘监听器
+		this.addKeyListener(new PlayerControl(gameControl));
 	}
-	/**
-	 * 安装玩家控制器
-	 */
-	public void setGameControl(PlayerControl playerControl){
-		this.addKeyListener(playerControl);
-	}
+
 	/**
 	 * 初始化组件
 	 */
@@ -53,6 +50,12 @@ public class JPanelGame extends JPanel {
 		this.btnStart.setBounds(GameConfig.getFrameConfig().getButtonConfig()
 				.getStartX(), GameConfig.getFrameConfig().getButtonConfig()
 				.getStartY(), BTN_SIZE_W, BTN_SIZE_H);
+		//给开始按钮增加事件监听
+		this.btnStart.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				gameControl.start();
+			}
+		});
 		// 添加按钮到面板
 		this.add(btnStart);
 		// 初始化设置按钮
@@ -73,7 +76,7 @@ public class JPanelGame extends JPanel {
 	/**
 	 * 初始化层
 	 */
-	private void initLayer(){
+	private void initLayer(GameDto dto){
 		try {
 			// 获得游戏配置
 	    	FrameConfig fCfg = GameConfig.getFrameConfig();
@@ -94,7 +97,7 @@ public class JPanelGame extends JPanel {
 						layerCfg.getY(), layerCfg.getW(), layerCfg.getH()
 						);
 				//设置游戏数据对象
-				layer.setDto(this.dto);
+				layer.setDto(dto);
 				// 把Layer对象放入集合
 				layers.add(layer);
 
@@ -116,7 +119,12 @@ public class JPanelGame extends JPanel {
 		//返回焦点
 		this.requestFocus();
 	}
-	public void setGameControl(GameControl gameControl) {
-		this.gameControl = gameControl;
+	/**
+	 * 控制按钮是否点
+	 */
+	public void buttonSwitch(boolean onOff){
+		this.btnConfig.setEnabled(onOff);
+		this.btnStart.setEnabled(onOff);
 	}
+	
 }
