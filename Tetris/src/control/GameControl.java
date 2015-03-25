@@ -11,10 +11,12 @@ import java.util.Set;
 
 import service.GameTetris;
 import service.IGameService;
+import ui.JFrameGame;
 import ui.JPanelGame;
 import config.DataInterfaceConfig;
 import config.GameConfig;
 import dao.IData;
+import dto.GameDto;
 
 /**
  * 接收玩家键盘事件
@@ -41,28 +43,43 @@ public class GameControl {
 	 * 游戏界面层
 	 */
 	private JPanelGame panelGame;
-	
+	/**
+	 * 游戏控制窗口
+	 */
 	private ui.cfg.FrameConfig frameConfig;
-
 	/**
 	 * 游戏行为控制
 	 */
 	private Map<Integer,Method> actionList;
-	public GameControl(JPanelGame panelGame,GameTetris gameService){
-		this.panelGame = panelGame;
-		this.gameService = gameService;
-		//获得类对象
+	/**
+	 * 游戏线程
+	 */
+	private Thread gameThread = null;
+	/**
+	 * 游戏数据源
+	 */
+	private GameDto dto = null;
+	public GameControl(){
+		//创建游戏数据源
+		this.dto = new GameDto();
+		//创建游戏逻辑块（连接游戏数据源）
+		this.gameService = new GameTetris(dto);
+		//创建数据接口A对象
 		this.dataA =createDataObject(GameConfig.getDataConfig().getDataA());
 		//设置数据库记录到游戏
-		this.gameService.setDbRecode(dataA.loadData());
+		this.dto.setDbRecode(dataA.loadData());		
 		//从数据接口B获得本地磁盘记录
 		this.dataB = createDataObject(GameConfig.getDataConfig().getDataB());
 		//设置本地磁盘记录到游戏
-		this.gameService.setDiskRecode(dataB.loadData());
+		this.dto.setDiskRecode(dataB.loadData());
+		//创建游戏面板
+		this.panelGame = new JPanelGame(this,dto);
 		//读取用户控制设置
 		this.setControlConfig();
-		//
+		//初始化用户配置窗口
 		this.frameConfig = new ui.cfg.FrameConfig(this);
+		//初始化游戏窗口，安装游戏面板
+		new JFrameGame(this.panelGame);
 	}
 	
 	/**
@@ -134,5 +151,39 @@ public class GameControl {
 		this.panelGame.repaint();
 		this.setControlConfig();
 	}
-	
+	/**
+	 * 开始按钮事件
+	 */
+	public void start() {
+		//面板按钮设置为不可点击
+		this.panelGame.buttonSwitch(false);
+		//游戏数据初始化
+		this.gameService.startGame();
+		// 创建线程对象
+		this.gameThread = new Thread() {
+			@Override
+			public void run() {
+				// 刷新画面
+				panelGame.repaint();
+				//主循环
+				while (true) {
+					try {
+						// 等待0.5秒
+						Thread.sleep(500);
+						// 方块下落
+						gameService.mainAction();
+						// 刷新画面
+						panelGame.repaint();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		};
+     	//启动线程
+     	this.gameThread.start();
+     	//刷新画面
+     	this.panelGame.repaint();
+	}
+
 }

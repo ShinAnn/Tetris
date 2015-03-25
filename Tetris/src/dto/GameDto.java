@@ -64,6 +64,14 @@ public class GameDto {
 		 * 消行
 		 */
 		private int nowRemoveLine;
+		/**
+		 * 游戏是否是开始状态
+		 */
+		private boolean start;
+		/**
+		 * 是否显示阴影
+		 */
+		private boolean showShadow;
 
 		public List<Player> getDbRecode() {
 			return dbRecode;
@@ -140,5 +148,17 @@ public class GameDto {
 
 		public void setNowRemoveLine(int nowRemoveLine) {
 			this.nowRemoveLine = nowRemoveLine;
+		}
+		public boolean isStart() {
+			return start;
+		}
+		public void setStart(boolean start) {
+			this.start = start;
+		}
+		public boolean isShowShadow() {
+			return showShadow;
+		}
+		public void changeShowShadow() {
+			this.showShadow = !this.showShadow;
 		}
 }
