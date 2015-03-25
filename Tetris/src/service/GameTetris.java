@@ -2,8 +2,10 @@ package service;
 
 import java.awt.Point;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
+import config.GameConfig;
 import dto.GameDto;
 import dto.Player;
 import entity.GameAct;
@@ -21,6 +23,14 @@ public class GameTetris implements IGameService{
 	 * 方块种类数
 	 */
 	private static final int MAX_TYPE = 6;
+	/**
+	 * 升级行数
+	 */
+	private static final int LEVEL_UP =GameConfig.getSystemConfig().getLevelUp();
+	/**
+	 * 连续消行分数表
+	 */
+	private static final Map<Integer, Integer> PLUS_POINT =GameConfig.getSystemConfig().getPlusPoint();
 	
 	public GameTetris(GameDto dto) {
 		this.dto = dto;
@@ -51,48 +61,76 @@ public class GameTetris implements IGameService{
 			map[act[i].x][act[i].y] = true;
 		}
 		//判断消行，并计算获得的经验值
-		//TODO TODO TODO int exp = this.plusExp();
-		//创建下一个方块
+		int plusExp = this.plusExp();
+		//如果发生消行
+		if (plusExp > 0) {
+			// 增加经验值
+			this.plusPoint(plusExp);
+		}
+		// 创建下一个方块
 		this.dto.getGameAct().init(this.dto.getNext());
 		//随机生成再下一个方块
 		this.dto.setNext(random.nextInt(MAX_TYPE)); 
 	}
-	//TODO TODO TODO
-	/*private int plusExp() {
-		//
+	/**
+	 * 加分升级操作
+	 */
+	private void plusPoint(int plusExp) {
+		int level = this.dto.getNowLevel();
+		int rmLine = this.dto.getNowRemoveLine();
+		int point = this.dto.getNowPoint();
+		if(rmLine%LEVEL_UP+plusExp>=LEVEL_UP){
+			level++;
+			this.dto.setNowLevel(level);
+		}
+		this.dto.setNowRemoveLine(rmLine+plusExp);
+		this.dto.setNowPoint(point+PLUS_POINT.get(plusExp));
+	}
+
+	/**
+	 * 消行操作
+	 */
+	private int plusExp() {
+		//获得游戏地图
 		boolean[][] map = this.dto.getGameMap();
-		//
-		for (int y = 0; y < 18; y++) {
-			//
+		int exp = 0;
+		// 扫描游戏地图，查看是否可消行
+		for (int y = 0; y < GameDto.GAMEZONE_H; y++) {
+			//判断是否可消行
 			if(this.isCanRemoveLine(y,map)){
-				//
+				//如果可消行，那个就消行
 				this.removeLine(y,map);
+				// 增加经验值
+				exp++;
 			}
 		}
-		return 0;
-	}*/
-	//TODO TODO TODO
-	/*private void removeLine(int rowNumber, boolean[][] map) {
-		for (int x = 0; x < 18; x++) {
+		return exp;
+	}
+	/**
+	 * 消行处理
+	 */
+	private void removeLine(int rowNumber, boolean[][] map) {
+		for (int x = 0; x < GameDto.GAMEZONE_W; x++) {
 			for (int y = rowNumber; y > 0; y--) {
 				map[x][y] = map[x][y-1];
 			}
 			map[x][0] = false;
 		}
 	}
-*/
-	//TODO TODO TODO
-	/*private boolean isCanRemoveLine(int y, boolean[][] map) {
-		//
-		for (int x = 0; x < 10; x++) {
+	/**
+	 * 判断某一行是否可消除
+	 */
+	private boolean isCanRemoveLine(int y, boolean[][] map) {
+		//单行内对每一个单元格进行扫描
+		for (int x = 0; x < GameDto.GAMEZONE_W; x++) {
 			if(!map[x][y]){
-				//
+				//如果有一个方格为false则直接跳到下一行
 				return false;
 			}
 		}
 		return true;
 	}
-*/
+
 	/**
 	 * 控制方向键（左）
 	 */
@@ -131,13 +169,11 @@ public class GameTetris implements IGameService{
 
 	@Override
 	public void keyFunLeft() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void keyFunRight() {
-		// TODO Auto-generated method stub
 		
 	}
 	

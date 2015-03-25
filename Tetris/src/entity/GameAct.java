@@ -53,7 +53,6 @@ public class GameAct {
 			for (int i = 0; i < actPoints.length; i++) {
 				int newX = actPoints[i].x + moveX;
 				int newY = actPoints[i].y + moveY;
-				// TODO
 				if (isOverZone(newX, newY,gameMap)) {
 					return false;
 				}

@@ -12,9 +12,13 @@ import entity.GameAct;
  *
  */
 public class GameDto {
-	
-	private static final int GAMEZONE_W = GameConfig.getSystemConfig().getMaxX()+1;
-	private static final int GAMEZONE_H =  GameConfig.getSystemConfig().getMaxY()+1;
+	/**
+	 * 游戏宽度
+	 */
+	public static final int GAMEZONE_W = GameConfig.getSystemConfig().getMaxX()+1;
+	/**
+	 */
+	public static final int GAMEZONE_H =  GameConfig.getSystemConfig().getMaxY()+1;
 	  /**
 	   * 构造函数
 	   */

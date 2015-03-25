@@ -26,7 +26,7 @@ public class LayerGame extends Layer {
 		this.createWindow(g);
 		// 获得方块数组集合
 		Point[] points = this.dto.getGameAct().getActPoints();
-		//绘制阴影 TODO 阴影关闭
+		//绘制阴影 
 		this.drawShadow(true,points,g);
 		// 获得方块类型编号(0-6)
 		int typeCode = this.dto.getGameAct().getTypeCode();

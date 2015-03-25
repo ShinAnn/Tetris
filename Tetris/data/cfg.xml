@@ -4,18 +4,18 @@
 	<frame title="Java俄罗斯方块" windowUp="32" width="1158" height="650" 
 	       padding="16" border="5" sizeRol="5" loseIdx="8">
 		<button w="105" h="40">
-			<start x="823" y="57"/>
-			<userConfig x="972" y="57"/> 
+			<start x="823" y="31"/>
+			<userConfig x="972" y="31"/> 
 		</button> 
 		<layer className="ui.LayerBackGround" x="0" y="0" w="0" h="0" />
 		<layer className="ui.LayerDataBase" x="42" y="16" w="330" h="277" />
 		<layer className="ui.LayerDisk" x="42" y="325" w="330" h="277" />
 		<layer className="ui.LayerGame" x="414" y="16" w="330" h="586" />
-		<layer className="ui.LayerButton" x="786" y="16" w="330" h="115" />
-		<layer className="ui.LayerNext" x="786" y="153" w="184" h="112" />
-		<layer className="ui.LayerLevel" x="970" y="153" w="146" h="112" />
-		<layer className="ui.LayerPoint" x="786" y="289" w="330" h="184" />
-		<layer className="ui.LayerAbout" x="786" y="489" w="330" h="112" />
+		<layer className="ui.LayerButton" x="786" y="16" w="330" h="70" />
+		<layer className="ui.LayerNext" x="786" y="108" w="184" h="112" />
+		<layer className="ui.LayerLevel" x="970" y="108" w="146" h="112" />
+		<layer className="ui.LayerPoint" x="786" y="244" w="330" h="184" />
+		<layer className="ui.LayerAbout" x="786" y="444" w="330" h="157" />
 	</frame>
 	<system minX="0" maxX="9" minY="0" maxY="17" levelUp="20">
 		<rect round="true">
@@ -39,8 +39,10 @@
 		<rect round="true">
 			<startPoint x="4" y="0"/><startPoint x="3" y="0"/><startPoint x="4" y="1"/><startPoint x="5" y="1"/>
 		</rect>
-		
-		
+		<plusPoint rm="1" point="10"/>
+		<plusPoint rm="2" point="30"/>
+		<plusPoint rm="3" point="50"/>
+		<plusPoint rm="4" point="80"/>	
 	</system>
 	<data maxRow = "5">
 		<dataInterface className = "dao.DataBase">
