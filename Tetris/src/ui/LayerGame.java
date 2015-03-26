@@ -35,8 +35,12 @@ public class LayerGame extends Layer {
 			this.drawShadow(points, g);
 			// 绘制活动方块
 			this.drawMainAct(points, g);
-			// 绘制游戏地图
-			this.drawMap(g);
+		}
+		// 绘制游戏地图
+		this.drawMap(g);
+		//暂停
+		if(this.dto.isPause()){
+			this.drawImageAtCenter(Img.PAUSE, g);
 		}
 	}
 	
@@ -99,10 +103,11 @@ public class LayerGame extends Layer {
 	 */
 	private void drawActByPoint(int x, int y, int imgIdx, Graphics g) {
 		imgIdx = this.dto.isStart()?imgIdx:LOSE_IDX;
-		g.drawImage(Img.ACT, this.x + (x << ACT_SIZE_ROL) + 5, this.y
-				+ (y << ACT_SIZE_ROL) + 5, this.x + (x << ACT_SIZE_ROL)
-				+ (1 << ACT_SIZE_ROL) + 5, this.y + (y << ACT_SIZE_ROL)
-				+ (1 << ACT_SIZE_ROL) + 5, imgIdx << ACT_SIZE_ROL, 0,
-				(imgIdx + 1) << ACT_SIZE_ROL, 1 << ACT_SIZE_ROL, null);
+		g.drawImage(Img.ACT, 
+				this.x + (x << ACT_SIZE_ROL) + BORDER, 
+				this.y+ (y << ACT_SIZE_ROL) + BORDER, 
+				this.x + (x << ACT_SIZE_ROL)	+ (1 << ACT_SIZE_ROL) + BORDER, 
+				this.y + (y << ACT_SIZE_ROL)	+ (1 << ACT_SIZE_ROL) + BORDER, 
+				imgIdx << ACT_SIZE_ROL, 0,(imgIdx + 1) << ACT_SIZE_ROL, 1 << ACT_SIZE_ROL, null);
 	}
 }

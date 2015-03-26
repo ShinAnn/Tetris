@@ -1,12 +1,14 @@
 package config;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.dom4j.Element;
 
-public class DataInterfaceConfig {
+@SuppressWarnings("serial")
+public class DataInterfaceConfig implements Serializable{
 	private final String className;
 	private final Map<String,String> param;
 	

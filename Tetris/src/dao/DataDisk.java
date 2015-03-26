@@ -44,10 +44,6 @@ public class DataDisk implements IData{
 		List<Player> players = this.loadData();
 		// 追加新纪录
 		players.add(pla);
-		// 判断记录是否超过5条，去掉分数低的
-		while (players.size() > 5) {
-			players.remove(6);
-		}
 		// 重新写入
 		ObjectOutputStream oos = null;
 		try {

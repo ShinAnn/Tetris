@@ -1,11 +1,13 @@
 package config;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.dom4j.Element;
 
-public class FrameConfig {
+@SuppressWarnings("serial")
+public class FrameConfig implements Serializable{
 	private final String title;
 	private final int windowUp;
 	private final int width;

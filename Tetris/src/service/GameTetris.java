@@ -34,16 +34,6 @@ public class GameTetris implements IGameService{
 		this.dto = dto;
 	}
 
-	
-	/**
-	 * 游戏失败后的处理
-	 */
-	private void afterLose() {
-		//设置游戏开始状态为false
-		this.dto.setStart(false);
-		// TODO 关闭游戏主线程
-		
-	}
 
 	/**
 	 * 检查游戏是否失败
@@ -123,6 +113,9 @@ public class GameTetris implements IGameService{
 	 * 控制方向键（上）
 	 */
 	public boolean keyUp() {
+		if(this.dto.isPause()){
+			return true;
+		}
 		synchronized (this.dto) {
 			this.dto.getGameAct().round(this.dto.getGameMap());
 		}
@@ -133,6 +126,9 @@ public class GameTetris implements IGameService{
 	 * 控制方向键（下）
 	 */
 	public boolean keyDown() {
+		if(this.dto.isPause()){
+			return true;
+		}
 		synchronized (this.dto) {
 			if (this.dto.getGameAct().move(0, 1, this.dto.getGameMap())) {
 				return false;
@@ -158,7 +154,8 @@ public class GameTetris implements IGameService{
 			this.dto.setNext(random.nextInt(MAX_TYPE));
 			// 检查游戏是否失败
 			if (this.isLose()) {
-				this.afterLose();
+				//结束游戏
+				this.dto.setStart(false);
 			}
 		}
 		return true;
@@ -167,6 +164,9 @@ public class GameTetris implements IGameService{
 	 * 控制方向键（左）
 	 */
 	public boolean keyLeft() {
+		if(this.dto.isPause()){
+		return true;
+	}
 		synchronized (this.dto) {
 			this.dto.getGameAct().move(-1, 0, this.dto.getGameMap());
 			return true;
@@ -177,6 +177,9 @@ public class GameTetris implements IGameService{
 	 * 控制方向键（右）
 	 */
 	public boolean keyRight() {
+		if(this.dto.isPause()){
+			return true;
+		}
 		synchronized (this.dto) {
 			this.dto.getGameAct().move(1, 0, this.dto.getGameMap());
 			return true;
@@ -186,7 +189,8 @@ public class GameTetris implements IGameService{
 
 	@Override
 	public boolean keyFunUp() {
-		// TODO 作弊键
+		//作弊键
+		this.dto.setCheat(true);
 		this.plusPoint(1);
 		return true;
 	}
@@ -194,6 +198,9 @@ public class GameTetris implements IGameService{
 	@Override
 	public boolean keyFunDown() {
 		//瞬间下落
+		if(this.dto.isPause()){
+			return true;
+		}
 		while(!this.keyDown());
 		return true;
 	}
@@ -208,6 +215,9 @@ public class GameTetris implements IGameService{
 	@Override
 	public boolean keyFunRight() {
 		//暂停
+		if(this.dto.isStart()){
+			this.dto.changePause();
+		}
 		return true;
 	}
 	
@@ -219,6 +229,8 @@ public class GameTetris implements IGameService{
 		this.dto.setGameAct( new GameAct(random.nextInt(MAX_TYPE)));
 		//把游戏状态设为开始
 		this.dto.setStart(true);
+		//dto初始化
+		this.dto.dtoInit();
 	}
 
 	@Override

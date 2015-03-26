@@ -1,8 +1,11 @@
 package config;
 
+import java.io.Serializable;
+
 import org.dom4j.Element;
 
-public class DataConfig {
+@SuppressWarnings("serial")
+public class DataConfig implements Serializable{
 	
 	private final int maxRow;
 	private final DataInterfaceConfig dataA;

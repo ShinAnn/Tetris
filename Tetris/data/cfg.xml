@@ -39,10 +39,10 @@
 		<rect round="true">
 			<startPoint x="4" y="0"/><startPoint x="3" y="0"/><startPoint x="4" y="1"/><startPoint x="5" y="1"/>
 		</rect>
-		<plusPoint rm="1" point="10"/>
-		<plusPoint rm="2" point="30"/>
-		<plusPoint rm="3" point="50"/>
-		<plusPoint rm="4" point="80"/>	
+		<plusPoint rm="1" point="25"/>
+		<plusPoint rm="2" point="75"/>
+		<plusPoint rm="3" point="125"/>
+		<plusPoint rm="4" point="200"/>	
 	</system>
 	<data maxRow = "5">
 		<dataInterface className = "dao.DataBase">

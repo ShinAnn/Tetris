@@ -1,6 +1,7 @@
 package config;
 
 import java.awt.Point;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.Map;
 
 import org.dom4j.Element;
 
-public class SystemConfig {
+@SuppressWarnings("serial")
+public class SystemConfig implements Serializable{
 	private final int minX;
 	private final int maxX;
 	private final int minY;

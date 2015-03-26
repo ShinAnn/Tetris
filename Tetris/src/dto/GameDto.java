@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import util.GameFunction;
 import config.GameConfig;
 import entity.GameAct;
 /**
@@ -30,7 +31,12 @@ public class GameDto {
 		 */
 		public void dtoInit(){
 			this.gameMap = new boolean[GAMEZONE_W][GAMEZONE_H];
-			//TODO初始化所有变量
+			this.nowLevel = 0;
+			this.nowPoint = 0;
+			this.nowRemoveLine = 0;
+			this.pause = false;
+			this.cheat = false;
+			this.sleepTime = GameFunction.getSleepTimeByLevel(this.nowLevel);
 		}
 	   /**
 	    * 数据库记录
@@ -72,7 +78,18 @@ public class GameDto {
 		 * 是否显示阴影
 		 */
 		private boolean showShadow;
-
+		/**
+		 * 暂停
+		 */
+		private boolean pause;
+		/**
+		 * 是否使用作弊
+		 */
+		private boolean cheat;
+		/**
+		 * 线程等待时间
+		 */
+		private long sleepTime;
 		public List<Player> getDbRecode() {
 			return dbRecode;
 		}
@@ -132,6 +149,8 @@ public class GameDto {
 
 		public void setNowLevel(int nowLevel) {
 			this.nowLevel = nowLevel;
+			//计算线程睡眠时间（下落时间）
+			this.sleepTime = GameFunction.getSleepTimeByLevel(this.nowLevel);
 		}
 
 		public int getNowPoint() {
@@ -160,5 +179,20 @@ public class GameDto {
 		}
 		public void changeShowShadow() {
 			this.showShadow = !this.showShadow;
+		}
+		public boolean isPause() {
+			return pause;
+		}
+		public void changePause() {
+			this.pause = !this.pause;
+		}
+		public boolean isCheat() {
+			return cheat;
+		}
+		public void setCheat(boolean cheat) {
+			this.cheat = cheat;
+		}
+		public long getSleepTime() {
+			return sleepTime;
 		}
 }

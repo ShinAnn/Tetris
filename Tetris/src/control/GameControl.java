@@ -11,12 +11,14 @@ import java.util.Set;
 
 import service.GameTetris;
 import service.IGameService;
-import ui.JFrameGame;
-import ui.JPanelGame;
+import ui.window.JFrameGame;
+import ui.window.JFrameSavePoint;
+import ui.window.JPanelGame;
 import config.DataInterfaceConfig;
 import config.GameConfig;
 import dao.IData;
 import dto.GameDto;
+import dto.Player;
 
 /**
  * 接收玩家键盘事件
@@ -44,9 +46,13 @@ public class GameControl {
 	 */
 	private JPanelGame panelGame;
 	/**
-	 * 游戏控制窗口
+	 * 游戏控制设置窗口
 	 */
-	private ui.cfg.FrameConfig frameConfig;
+	private ui.window.JFrameConfig frameConfig;
+	/**
+	 * 保存分数窗口
+	 */
+	private JFrameSavePoint framSavePoint;
 	/**
 	 * 游戏行为控制
 	 */
@@ -77,7 +83,9 @@ public class GameControl {
 		//读取用户控制设置
 		this.setControlConfig();
 		//初始化用户配置窗口
-		this.frameConfig = new ui.cfg.FrameConfig(this);
+		this.frameConfig = new ui.window.JFrameConfig(this);
+		//初始化保存分数窗口
+		this.framSavePoint = new JFrameSavePoint(this);
 		//初始化游戏窗口，安装游戏面板
 		new JFrameGame(this.panelGame);
 	}
@@ -127,7 +135,7 @@ public class GameControl {
 	 * 根据玩家控制来决定行为
 	 */
 	public void actionByKeyCode(int keyCode) {
-		
+
 		try {
 			if(this.actionList.containsKey(keyCode)){
 				this.actionList.get(keyCode).invoke(this.gameService);
@@ -147,7 +155,7 @@ public class GameControl {
 	/**
 	 * 子窗口关闭事件
 	 */
-	public void serOver() {
+	public void setOver() {
 		this.panelGame.repaint();
 		this.setControlConfig();
 	}
@@ -157,33 +165,81 @@ public class GameControl {
 	public void start() {
 		//面板按钮设置为不可点击
 		this.panelGame.buttonSwitch(false);
+		//关闭窗口
+		this.frameConfig.setVisible(false);
+		this.framSavePoint.setVisible(false);
 		//游戏数据初始化
 		this.gameService.startGame();
 		// 创建线程对象
-		this.gameThread = new Thread() {
-			@Override
-			public void run() {
-				// 刷新画面
-				panelGame.repaint();
-				//主循环
-				while (true) {
-					try {
-						// 等待0.5秒
-						Thread.sleep(500);
-						// 方块下落
-						gameService.mainAction();
-						// 刷新画面
-						panelGame.repaint();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		};
+		this.gameThread = new MainThread();
      	//启动线程
      	this.gameThread.start();
      	//刷新画面
      	this.panelGame.repaint();
+	}
+	/**
+	 * 保存分数
+	 */
+	public void savePoint(String name) {
+		/* 不实现数据库*/
+		Player pla = new Player(name, this.dto.getNowPoint());
+		//保存记录到数据库
+		//this.dataA.saveData(pla);
+		//保存记录到磁盘
+		this.dataB.saveData(pla);
+		//设置数据库记录到游戏
+		//this.dto.setDbRecode(dataA.loadData());		
+		//设置磁盘记录到游戏
+		this.dto.setDiskRecode(dataB.loadData());		
+		//刷新画面
+		this.panelGame.repaint();
+	}
+	/**
+	 * 失败之后的处理
+	 */
+	
+	private void afterLose(){
+		if(!this.dto.isCheat()){
+		//显示保存得分窗口
+		this.framSavePoint.showWindow(this.dto.getNowPoint());
+		}
+		//使按钮可以点击
+		this.panelGame.buttonSwitch(true);
+	}
+	/**
+	 * 刷新画面
+	 */
+	public void repaint(){
+		this.panelGame.repaint();
+	}
+	/**
+	 * 游戏主线程
+	 */
+	private class MainThread extends Thread{
+		@Override
+		public void run() {
+			// 刷新画面
+			panelGame.repaint();
+			//主循环
+			while (dto.isStart()) {
+				
+				try {
+					// 线程睡眠
+					Thread.sleep(dto.getSleepTime());
+					//如果暂停，那么不执行主行为
+					if(dto.isPause()){
+						continue;
+					}
+					// 游戏主行为
+					gameService.mainAction();
+					// 刷新画面
+					panelGame.repaint();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			afterLose();
+		}
 	}
 
 }
